@@ -1,0 +1,46 @@
+body {
+	font-size: 16px;
+	background-color: #777777;
+	color: white;
+}
+.app-container {
+	min-width: 200px;
+	max-width: 400px;
+	min-height: 40px;
+	max-height: 500px;
+	width: auto;
+	margin-left: 5px;
+	margin-right: 5px;
+	display: flex;
+	flex-direction: column;
+}
+.cursor-text {
+	padding-right: 10px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.header-container {
+	display: flex;
+	flex-direction: column;
+}
+.seperator {
+	width: auto;
+	border-top: 1px solid white;
+}
+.cursor-controls-list-container {
+	display: flex;
+	flex-direction: column;
+}
+.cursor-controls-container {
+	display: flex;
+	align-items: center;
+	margin: 5px;
+}
+input.cursor-switch + label {
+	margin-left: auto;
+}
+.disabled {
+	filter: opacity(50%);
+	pointer-events: none;
+}

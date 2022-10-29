@@ -1,0 +1,28 @@
+{
+	"manifest_version": 2,
+	"name": "Conceptboard Cursors",
+	"version": "1.0.0",
+	"description": "Hide individual cursors in Conceptboard",
+	"icons": {
+		"48": "icons/main_48.png",
+		"96": "icons/main_96.png"
+	},
+	"browser_action": {
+		"browser_style": true,
+		"default_area": "navbar",
+		"default_title": "Conceptboard Cursors",
+		"default_popup": "browser_action/popup.html"
+	},
+	"content_scripts": [
+		{
+			"matches": ["https://app.conceptboard.com/board/*"],
+			"js": ["contentscripts/extract_data.js", "contentscripts/edit_cursors.js"]
+		}
+	],
+	"permissions": ["tabs", "activeTab", "storage"],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "cursors@extension.com"
+		}
+	}
+}

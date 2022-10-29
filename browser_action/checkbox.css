@@ -1,0 +1,35 @@
+:root {
+	--color-off-fg: #f0f0f0;
+	--color-off-bg: #bbbbbb;
+}
+input.switch {
+	position: fixed;
+	top: -9999px;
+	left: -9999px;
+}
+input.switch + label {
+	position: relative;
+	background-color: var(--color-off-bg);
+	height: 1.2em;
+	min-width: 2.4em;
+	border-radius: 0.6em;
+	cursor: pointer;
+}
+input.switch + label::before {
+	position: absolute;
+	content: '';
+	top: 0.15em;
+	left: 0.15em;
+	height: 0.9em;
+	aspect-ratio: 1/1;
+	border-radius: 0.45em;
+	background-color: var(--color-off-fg);
+	transition: left 200ms ease-in-out, top 200ms ease-in-out;
+}
+input.switch:checked + label {
+	background-color: var(--color-bg);
+}
+input.switch:checked + label::before {
+	left: 1.35em;
+	background-color: var(--color-fg);
+}
