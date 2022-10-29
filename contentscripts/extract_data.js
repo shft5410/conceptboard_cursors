@@ -44,7 +44,7 @@ async function getValue(key) {
 	const data = await browser.storage.local.get(`boardStorage_${boardCode}#${key}`)
 	return data[`boardStorage_${boardCode}#${key}`]
 }
-// Handle incoming messages
+// Handle change of storage
 function handleStorageChange(changes) {
 	Object.keys(changes).forEach((fullKey) => {
 		if (!fullKey.startsWith(`boardStorage_${boardCode}#`)) return
