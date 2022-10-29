@@ -6,7 +6,7 @@ Conceptboard only provides the option to turn all cursors on or off. With this e
 
 ## Installation
 
-Install this extension from the installation files provided under `releases`
+Install this extension from the installation files provided under `Releases`
 
 :warning: **To use the extension after intallation you must reload your conceptboards**
 
