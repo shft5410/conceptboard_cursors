@@ -14,13 +14,13 @@ body {
 	display: flex;
 	flex-direction: column;
 }
-.cursor-text {
+.description-text {
 	padding-right: 10px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
-.header-container {
+.controls-group-container {
 	display: flex;
 	flex-direction: column;
 }
@@ -39,6 +39,10 @@ body {
 }
 input.cursor-switch + label {
 	margin-left: auto;
+}
+.cursor-slider {
+	margin-left: auto;
+	width: calc(100% - 80px);
 }
 .disabled {
 	filter: opacity(50%);

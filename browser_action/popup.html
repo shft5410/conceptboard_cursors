@@ -7,18 +7,28 @@
 		<title>Conceptboard Cursors</title>
 		<link rel="stylesheet" href="popup.css" />
 		<link rel="stylesheet" href="checkbox.css" />
+		<link rel="stylesheet" href="slider.css" />
 		<script defer src="popup.js"></script>
 	</head>
 	<body>
 		<div class="app-container">
-			<div class="header-container">
+			<div class="controls-group-container">
 				<div class="cursor-controls-container">
-					<span class="cursor-text">Show All Cursors</span>
-					<input id="set-all" class="switch cursor-switch" type="checkbox" />
-					<label style="--color-fg: #4ea3a2; --color-bg: #9ed2c6" for="set-all"></label>
+					<span class="description-text">Show All Cursors</span>
+					<input id="all-cursors-show-cursor" class="switch cursor-switch" type="checkbox" />
+					<label style="--color-fg: #4ea3a2; --color-bg: #9ed2c6" for="all-cursors-show-cursor"></label>
 				</div>
-				<div class="seperator"></div>
+				<div class="cursor-controls-container">
+					<span class="description-text">Display Name</span>
+					<input id="all-cursors-show-name" class="switch cursor-switch" type="checkbox" />
+					<label style="--color-fg: #4ea3a2; --color-bg: #9ed2c6" for="all-cursors-show-name"></label>
+				</div>
+				<div class="cursor-controls-container">
+					<span class="description-text">Opacity</span>
+					<input class="slider cursor-slider" style="--color-fg: #4ea3a2; --color-bg: #9ed2c6" type="range" min="1" max="100" value="100" />
+				</div>
 			</div>
+			<div class="seperator"></div>
 			<div class="cursor-controls-list-container"></div>
 		</div>
 	</body>

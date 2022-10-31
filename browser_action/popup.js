@@ -5,10 +5,10 @@ const getLighterColor = (color) => '#' + color.match(/#([\da-fA-F]{2})([\da-fA-F
 // ***** Constants *****
 // Select app container
 const appContainerElement = document.querySelector('.app-container')
-// Select switch to control all cursor display states
-const allCursorsSwitchElement = document.querySelector('.header-container input.switch')
 // Select container which holds all cursor control elements
 const cursorContainerElement = document.querySelector('.cursor-controls-list-container')
+// Select switch to control all cursor display states
+const allCursorsSwitchElement = document.querySelector('.controls-group-container .cursor-controls-container:nth-child(1) input.switch')
 
 // ***** Variables *****
 // Current tab object
@@ -95,27 +95,54 @@ function handleStorageChange(changes) {
 
 // ***** Cursors controls *****
 // Create control elements for cursor
-function createCursorControls(name, color, uuid, enable) {
-	const container = document.createElement('div')
-	container.classList.add('cursor-controls-container')
-	container.dataset.uuid = uuid
-	const text = document.createElement('span')
-	text.classList.add('cursor-text')
-	text.textContent = name
-	const checkbox = document.createElement('input')
-	checkbox.type = 'checkbox'
-	checkbox.checked = enable
-	checkbox.classList.add('switch')
-	checkbox.classList.add('cursor-switch')
-	checkbox.id = uuid
-	checkbox.addEventListener('click', async (e) => {
-		sendMsg('change_cursor_display', { uuid: e.target.parentNode.dataset.uuid, enable: e.target.checked })
+function createCursorControls(name, color, uuid, enable, displayName = true, opacity = 100) {
+	const CONTROLS = [
+		{ type: 'switch', send: 'change_cursor_display', text: name, state: enable },
+		{ type: 'switch', send: 'change_name_display', text: 'Display Name', state: displayName },
+		{ type: 'slider', send: 'change_cursor_opacity', text: 'Opacity', state: opacity, config: { min: 1, max: 100 } },
+	]
+
+	const group = document.createElement('div')
+	group.classList.add('controls-group-container')
+	group.dataset.uuid = uuid
+
+	CONTROLS.forEach((c, index) => {
+		const container = document.createElement('div')
+		container.classList.add('cursor-controls-container')
+		const text = document.createElement('span')
+		text.classList.add('description-text')
+		text.textContent = c.text
+		if (c.type === 'switch') {
+			const checkbox = document.createElement('input')
+			checkbox.type = 'checkbox'
+			checkbox.checked = c.state
+			checkbox.classList.add('switch')
+			checkbox.classList.add('cursor-switch')
+			checkbox.id = index + '-switch-' + uuid
+			checkbox.addEventListener('click', async (e) => {
+				sendMsg(c.send, { uuid, enable: e.target.checked })
+			})
+			const label = document.createElement('label')
+			label.setAttribute('for', index + '-switch-' + uuid)
+			label.style = `--color-fg: ${color}; --color-bg: ${getLighterColor(color)};`
+			container.append(text, checkbox, label)
+		} else if (c.type === 'slider') {
+			const range = document.createElement('input')
+			range.type = 'range'
+			range.min = c.config.min
+			range.max = c.config.max
+			range.value = c.state
+			range.classList.add('slider')
+			range.classList.add('cursor-slider')
+			range.addEventListener('input', async (e) => {
+				sendMsg(c.send, { uuid, value: e.target.value })
+			})
+			range.style = `--color-fg: ${color}; --color-bg: ${getLighterColor(color)};`
+			container.append(text, range)
+		}
+		group.append(container)
 	})
-	const label = document.createElement('label')
-	label.setAttribute('for', uuid)
-	label.style = `--color-fg: ${color}; --color-bg: ${getLighterColor(color)};`
-	container.append(text, checkbox, label)
-	cursorContainerElement.append(container)
+	cursorContainerElement.append(group)
 }
 // Update cursor list
 async function update(updates, oldCursorData = []) {
@@ -131,7 +158,7 @@ async function update(updates, oldCursorData = []) {
 }
 // Control all switches
 async function changeAllSwitches(enable) {
-	const cursorControlSwitchElements = cursorContainerElement.querySelectorAll('.cursor-controls-container input.switch')
+	const cursorControlSwitchElements = cursorContainerElement.querySelectorAll('.controls-group-container .cursor-controls-container:nth-child(1) input.switch')
 	cursorControlSwitchElements.forEach((control) => {
 		if (control.checked !== enable) control.click()
 	})

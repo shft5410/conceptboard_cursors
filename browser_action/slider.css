@@ -1,0 +1,14 @@
+input.slider {
+	appearance: none;
+	height: 5px;
+	border-radius: 2.5px;
+	background-color: var(--color-bg);
+}
+input.slider::-moz-range-thumb {
+	width: 15px;
+	height: 15px;
+	border-radius: 7.5px;
+	border: 1px solid var(--color-bg);
+	cursor: pointer;
+	background-color: var(--color-fg);
+}
