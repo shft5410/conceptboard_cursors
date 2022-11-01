@@ -15,13 +15,13 @@ const allNamesSwitchElement = document.querySelector('.controls-group-container 
 const allOpacitiesSwitchElement = document.querySelector('.controls-group-container .cursor-controls-container:nth-child(3) input.slider')
 
 // ***** Variables *****
-// Current tab object
+// Current tab id
 let tabId = null
 // Connection Port
 let port = null
 // Code that identifies a specific concept board
 let boardCode = null
-// State of of 'all cursors' switch
+// States of 'all cursors' controls
 let allCursorsData = null
 // Cursor data
 let lastCursorData = []
