@@ -3,6 +3,8 @@
 const rgbToHex = (rgb) =>`#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}` // prettier-ignore
 
 // ***** Constants *****
+// Number of current version
+const VERSION_NUMBER = '1.1.2'
 // Select cursor container
 const userCursorsContainerElement = document.querySelector('.user-cursors-container')
 // Extract board code from url
@@ -29,6 +31,13 @@ let allCursorsData = null
 })()
 // Init local storage and load data
 async function initStorage() {
+	// Check for version change and fix incompatibilities
+	const storageVersionChange = (await getValue('version')) !== VERSION_NUMBER
+	setValue('version', VERSION_NUMBER)
+	if (storageVersionChange) {
+		await setValue('all_cursors', { all_enabled: true, all_names: true, all_opacities: 100 })
+	}
+
 	const allCursors = await getValue('all_cursors')
 	allCursorsData = allCursors === undefined ? { all_enabled: true, all_names: true, all_opacities: 100 } : allCursors
 	await setValue('cursors', [])
