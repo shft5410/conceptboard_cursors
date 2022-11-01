@@ -7,8 +7,12 @@ const getLighterColor = (color) => '#' + color.match(/#([\da-fA-F]{2})([\da-fA-F
 const appContainerElement = document.querySelector('.app-container')
 // Select container which holds all cursor control elements
 const cursorContainerElement = document.querySelector('.cursor-controls-list-container')
-// Select switch to control all cursor display states
+// Select switch to control all cursors display states
 const allCursorsSwitchElement = document.querySelector('.controls-group-container .cursor-controls-container:nth-child(1) input.switch')
+// Select switch to control all cursors name display states
+const allNamesSwitchElement = document.querySelector('.controls-group-container .cursor-controls-container:nth-child(2) input.switch')
+// Select slider to control all cursors opacity
+const allOpacitiesSwitchElement = document.querySelector('.controls-group-container .cursor-controls-container:nth-child(3) input.slider')
 
 // ***** Variables *****
 // Current tab object
@@ -18,7 +22,7 @@ let port = null
 // Code that identifies a specific concept board
 let boardCode = null
 // State of of 'all cursors' switch
-let allCursorsEnabled = false
+let allCursorsData = null
 // Cursor data
 let lastCursorData = []
 
@@ -38,11 +42,23 @@ let lastCursorData = []
 	await initStorage()
 
 	// ***** Listeners *****
-	// Add listener for 'all cursors' switch
+	// Add listener for 'all cursors enabled' switch
 	allCursorsSwitchElement.addEventListener('click', async (e) => {
-		allCursorsEnabled = e.target.checked
-		changeAllSwitches(e.target.checked)
-		await setValue('all_cursors', e.target.checked)
+		allCursorsData.all_enabled = e.target.checked
+		setAllCursorsEnabled(e.target.checked)
+		await setValue('all_cursors', allCursorsData)
+	})
+	// Add listener for 'all cursors names' switch
+	allNamesSwitchElement.addEventListener('click', async (e) => {
+		allCursorsData.all_names = e.target.checked
+		setAllNamesEnabled(e.target.checked)
+		await setValue('all_cursors', allCursorsData)
+	})
+	// Add listener for 'all cursors opacities' switch
+	allOpacitiesSwitchElement.addEventListener('input', async (e) => {
+		allCursorsData.all_opacities = e.target.value
+		setAllOpacities(e.target.value)
+		await setValue('all_cursors', allCursorsData)
 	})
 	// Add listener for storage change
 	browser.storage.local.onChanged.addListener(handleStorageChange)
@@ -56,9 +72,11 @@ function initPort() {
 async function initStorage() {
 	const [allCursors, cursors] = await Promise.all([getValue('all_cursors'), getValue('cursors')])
 	update(cursors || [])
-	allCursorsEnabled = allCursors === undefined ? true : allCursors
-	allCursorsSwitchElement.checked = allCursorsEnabled
-	if (allCursors === undefined) await setValue('all_cursors', true)
+	allCursorsData = allCursors === undefined ? { all_enabled: true, all_names: true, all_opacities: 100 } : allCursors
+	allCursorsSwitchElement.checked = allCursorsData.all_enabled
+	allNamesSwitchElement.checked = allCursorsData.all_names
+	allOpacitiesSwitchElement.value = allCursorsData.all_opacities
+	if (allCursors === undefined) await setValue('all_cursors', allCursorsData)
 }
 
 // ***** Messages *****
@@ -95,10 +113,10 @@ function handleStorageChange(changes) {
 
 // ***** Cursors controls *****
 // Create control elements for cursor
-function createCursorControls(name, color, uuid, enable, displayName = true, opacity = 100) {
+function createCursorControls(name, color, uuid, enable, showName, opacity) {
 	const CONTROLS = [
 		{ type: 'switch', send: 'change_cursor_display', text: name, state: enable },
-		{ type: 'switch', send: 'change_name_display', text: 'Display Name', state: displayName },
+		{ type: 'switch', send: 'change_name_display', text: 'Show Name', state: showName },
 		{ type: 'slider', send: 'change_cursor_opacity', text: 'Opacity', state: opacity, config: { min: 1, max: 100 } },
 	]
 
@@ -109,6 +127,7 @@ function createCursorControls(name, color, uuid, enable, displayName = true, opa
 	CONTROLS.forEach((c, index) => {
 		const container = document.createElement('div')
 		container.classList.add('cursor-controls-container')
+		container.dataset.uuid = uuid
 		const text = document.createElement('span')
 		text.classList.add('description-text')
 		text.textContent = c.text
@@ -150,18 +169,41 @@ async function update(updates, oldCursorData = []) {
 		oldCursorData.map((cursor) => cursor.uuid),
 		updates.map((update) => update.uuid)
 	)
-	removed.forEach((uuid) => cursorContainerElement.querySelector(`[data-uuid='${uuid}'`)?.remove())
+	removed.forEach((uuid) => cursorContainerElement.querySelector(`.controls-group-container[data-uuid='${uuid}'`)?.remove())
 	added.forEach((uuid) => {
 		const c = updates.find((update) => update.uuid === uuid)
-		createCursorControls(c.name, c.color, c.uuid, c.enable)
+		createCursorControls(c.name, c.color, c.uuid, c.enable, c.show_name, c.opacity)
 	})
 }
 // Control all switches
-async function changeAllSwitches(enable) {
+async function setAllCursorsEnabled(enable) {
 	const cursorControlSwitchElements = cursorContainerElement.querySelectorAll('.controls-group-container .cursor-controls-container:nth-child(1) input.switch')
+	const changes = []
 	cursorControlSwitchElements.forEach((control) => {
-		if (control.checked !== enable) control.click()
+		if (control.checked !== enable) control.checked = enable
+		changes.push({ uuid: control.parentNode.dataset.uuid, enable })
 	})
+	sendMsg('change_cursor_display', changes)
+}
+// Control all switches
+async function setAllNamesEnabled(enable) {
+	const cursorControlSwitchElements = cursorContainerElement.querySelectorAll('.controls-group-container .cursor-controls-container:nth-child(2) input.switch')
+	const changes = []
+	cursorControlSwitchElements.forEach((control) => {
+		if (control.checked !== enable) control.checked = enable
+		changes.push({ uuid: control.parentNode.dataset.uuid, enable })
+	})
+	sendMsg('change_name_display', changes)
+}
+// Control all sliders
+async function setAllOpacities(value) {
+	const cursorControlSliderElements = cursorContainerElement.querySelectorAll('.controls-group-container .cursor-controls-container:nth-child(3) input.slider')
+	const changes = []
+	cursorControlSliderElements.forEach((control) => {
+		control.value = value
+		changes.push({ uuid: control.parentNode.dataset.uuid, value })
+	})
+	sendMsg('change_cursor_opacity', changes)
 }
 // Handle pages with invalid urls
 function invalidUrl() {

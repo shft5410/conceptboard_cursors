@@ -38,11 +38,11 @@ body {
 	margin: 5px;
 }
 input.cursor-switch + label {
-	margin-left: auto;
+	margin-left: auto; /*! Keeps popup from min width */
 }
 .cursor-slider {
 	margin-left: auto;
-	width: calc(100% - 80px);
+	width: calc(100% - 80px); /*! Keeps popup from min width */
 }
 .disabled {
 	filter: opacity(50%);

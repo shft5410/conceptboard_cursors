@@ -42,11 +42,24 @@ class PopupConnection {
 	// Handle incoming messages
 	onMsg([type, data]) {
 		if (data) data = JSON.parse(data)
+		if (!Array.isArray(data)) data = [data]
 		if (type === 'pong') {
 			this.pendingPings = 0
 		} else if (type === 'change_cursor_display') {
-			// Hide or show cursor
-			this.userCursorsContainerElement.querySelector(`[data-uuid='${data.uuid}']`).style.display = data.enable ? 'initial' : 'none'
+			data.forEach((cursor) => {
+				// Hide or show cursor
+				this.userCursorsContainerElement.querySelector(`[data-uuid='${cursor.uuid}']`).style.display = cursor.enable ? 'initial' : 'none'
+			})
+		} else if (type === 'change_name_display') {
+			data.forEach((cursor) => {
+				// Hide or show name
+				this.userCursorsContainerElement.querySelector(`[data-uuid='${cursor.uuid}'] .arrowlabel`).style.display = cursor.enable ? 'initial' : 'none'
+			})
+		} else if (type === 'change_cursor_opacity') {
+			data.forEach((cursor) => {
+				// Change opacitiy of cursor
+				this.userCursorsContainerElement.querySelector(`[data-uuid='${cursor.uuid}']`).style.filter = `opacity(${cursor.value}%)`
+			})
 		}
 	}
 

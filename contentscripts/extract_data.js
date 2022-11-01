@@ -11,8 +11,8 @@ const boardCode = location.href.match(/(?:\b[a-z0-9]{4}\b-){4}(?:\b[a-z0-9]{4}\b
 // ***** Variables *****
 // Cursor data
 let cursorData = []
-// State of of 'all cursors' switch
-let allCursorsEnabled = null
+// Data about the behaviour of all cursors
+let allCursorsData = null
 
 // ***** Init *****
 ;(async () => {
@@ -30,7 +30,7 @@ let allCursorsEnabled = null
 // Init local storage and load data
 async function initStorage() {
 	const allCursors = await getValue('all_cursors')
-	allCursorsEnabled = allCursors === undefined ? true : allCursors
+	allCursorsData = allCursors === undefined ? { all_enabled: true, all_names: true, all_opacities: 100 } : allCursors
 	await setValue('cursors', [])
 }
 
@@ -51,7 +51,7 @@ function handleStorageChange(changes) {
 		const key = fullKey.match(/boardStorage_.+#(.+)/)[1]
 		const { newValue } = changes[fullKey]
 		if (key === 'all_cursors') {
-			allCursorsEnabled = newValue
+			allCursorsData = newValue
 		}
 	})
 }
@@ -65,7 +65,8 @@ async function update(mutationList) {
 		if (mutation.type === 'childList') {
 			if (mutation.target.classList.contains('user-cursors-container')) {
 				mutation.addedNodes.forEach((node) => {
-					node.style.display = allCursorsEnabled ? 'initial' : 'none'
+					node.style.display = allCursorsData.all_enabled ? 'initial' : 'none'
+					node.style.filter = `opacity(${allCursorsData.all_opacities}%)`
 					node.dataset.uuid = crypto.randomUUID()
 				})
 				mutation.removedNodes.forEach((node) => {
@@ -74,10 +75,17 @@ async function update(mutationList) {
 					cursorDataLocal.splice(index, 1)
 				})
 			} else if (mutation.target.classList.contains('user-mouse-cursor')) {
-				const cursor = { enable: mutation.target.style.display !== 'none', uuid: mutation.target.dataset.uuid }
+				const cursor = {
+					enable: mutation.target.style.display !== 'none',
+					opacity: parseInt(mutation.target.style.filter.match(/(\d{1,3})/)[1]),
+					uuid: mutation.target.dataset.uuid,
+				}
 				mutation.addedNodes.forEach((node) => {
-					if (node.classList.contains('arrowlabel')) cursor.name = node.textContent
-					else if (node.classList.contains('arrow1')) cursor.color = rgbToHex(node.style.borderColor)
+					if (node.classList.contains('arrowlabel')) {
+						node.style.display = allCursorsData.all_names ? 'initial' : 'none'
+						cursor.show_name = allCursorsData.all_names
+						cursor.name = node.textContent
+					} else if (node.classList.contains('arrow1')) cursor.color = rgbToHex(node.style.borderColor)
 				})
 				cursorDataLocal.push(cursor)
 			}
@@ -87,6 +95,12 @@ async function update(mutationList) {
 				const index = cursorDataLocal.findIndex((cursor) => cursor.uuid === mutation.target.dataset.uuid)
 				if (index < 0) return
 				cursorDataLocal[index].enable = mutation.target.style.display !== 'none'
+				cursorDataLocal[index].opacity = parseInt(mutation.target.style.filter.match(/(\d{1,3})/)[1])
+			} else if (mutation.target.classList.contains('arrowlabel')) {
+				if (!mutation.target.parentNode.dataset.uuid) return
+				const index = cursorDataLocal.findIndex((cursor) => cursor.uuid === mutation.target.parentNode.dataset.uuid)
+				if (index < 0) return
+				cursorDataLocal[index].show_name = mutation.target.style.display !== 'none'
 			}
 		}
 	})
