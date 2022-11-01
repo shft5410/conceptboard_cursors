@@ -6,7 +6,7 @@ body {
 .app-container {
 	min-width: 200px;
 	max-width: 400px;
-	min-height: 40px;
+	min-height: 110px;
 	max-height: 500px;
 	width: auto;
 	margin-left: 5px;
