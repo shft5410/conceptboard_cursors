@@ -56,8 +56,9 @@ let lastCursorData = []
 	})
 	// Add listener for 'all cursors opacities' switch
 	allOpacitiesSwitchElement.addEventListener('input', async (e) => {
+		const oldValue = allCursorsData.all_opacities
 		allCursorsData.all_opacities = e.target.value
-		setAllOpacities(e.target.value)
+		setAllOpacities(e.target.value, oldValue)
 		await setValue('all_cursors', allCursorsData)
 	})
 	// Add listener for storage change
@@ -176,7 +177,7 @@ async function update(updates, oldCursorData = []) {
 	})
 }
 // Control all switches
-async function setAllCursorsEnabled(enable) {
+function setAllCursorsEnabled(enable) {
 	const cursorControlSwitchElements = cursorContainerElement.querySelectorAll('.controls-group-container .cursor-controls-container:nth-child(1) input.switch')
 	const changes = []
 	cursorControlSwitchElements.forEach((control) => {
@@ -186,7 +187,7 @@ async function setAllCursorsEnabled(enable) {
 	sendMsg('change_cursor_display', changes)
 }
 // Control all switches
-async function setAllNamesEnabled(enable) {
+function setAllNamesEnabled(enable) {
 	const cursorControlSwitchElements = cursorContainerElement.querySelectorAll('.controls-group-container .cursor-controls-container:nth-child(2) input.switch')
 	const changes = []
 	cursorControlSwitchElements.forEach((control) => {
@@ -196,10 +197,11 @@ async function setAllNamesEnabled(enable) {
 	sendMsg('change_name_display', changes)
 }
 // Control all sliders
-async function setAllOpacities(value) {
+function setAllOpacities(value, oldValue) {
 	const cursorControlSliderElements = cursorContainerElement.querySelectorAll('.controls-group-container .cursor-controls-container:nth-child(3) input.slider')
 	const changes = []
 	cursorControlSliderElements.forEach((control) => {
+		if (control.value > Math.max(value, oldValue) || control.value < Math.min(value, oldValue)) return
 		control.value = value
 		changes.push({ uuid: control.parentNode.dataset.uuid, value })
 	})
