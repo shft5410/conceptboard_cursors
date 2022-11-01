@@ -33,16 +33,18 @@ body {
 	flex-direction: column;
 }
 .cursor-controls-container {
+	position: relative;
 	display: flex;
 	align-items: center;
 	margin: 5px;
 }
 input.cursor-switch + label {
-	margin-left: auto; /*! Keeps popup from min width */
+	margin-left: auto;
 }
 .cursor-slider {
-	margin-left: auto;
-	width: calc(100% - 80px); /*! Keeps popup from min width */
+	position: absolute;
+	right: 0;
+	width: calc(100% - 80px);
 }
 .disabled {
 	filter: opacity(50%);
