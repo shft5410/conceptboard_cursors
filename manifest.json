@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Conceptboard Cursors",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Hide individual cursors in Conceptboard",
 	"icons": {
 		"48": "icons/main_48.png",
