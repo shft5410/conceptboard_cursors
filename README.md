@@ -8,7 +8,9 @@ Conceptboard only provides the option to turn all cursors on or off. With this e
 
 Install this extension from the installation files provided under `Releases`
 
-:warning: **To use the extension after intallation you must reload your conceptboards**
+:warning: **To use the extension after intallation / update you must reload your conceptboards**
+
+:warning: **In order for the extension to work properly after an update, you may need to clear the extension's local storage**
 
 ## Browser Support
 
