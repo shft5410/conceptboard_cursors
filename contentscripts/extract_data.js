@@ -4,7 +4,7 @@ const rgbToHex = (rgb) =>`#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice
 
 // ***** Constants *****
 // Number of current version
-const VERSION_NUMBER = '1.1.2'
+const VERSION_NUMBER = '1.1.3'
 // Select cursor container
 const userCursorsContainerElement = document.querySelector('.user-cursors-container')
 // Extract board code from url
