@@ -31,7 +31,7 @@ let lastCursorData = []
 	// Get currently shown tab
 	const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
 	// Exit if url does not match pattern
-	if (!tab?.url.startsWith('https://app.conceptboard.com/board/')) return invalidUrl()
+	if (!tab?.url.match(/https:\/\/.+\.conceptboard\.com\/board\/.+/)) return invalidUrl()
 	// Tab id to set up port connection
 	tabId = tab.id
 	// Extract board code from url
